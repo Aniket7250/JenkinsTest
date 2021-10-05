@@ -39,6 +39,10 @@ pipeline {
          
         stage('Deploy(Dev)') {
             steps {
+                withCredentials([usernamePassword(credentialsId: 'IIS_JENKINS', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    bat "\"C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" -verb=sync -source:package=\"web-api\\bin\\debug\\webpackage\\${zipFolderName}.zip\" -dest:auto,computerName=\"https://13.234.53.206:8172/msdeploy.axd?site=Default Website\",userName=${USERNAME},password=${PASSWORD},authType=basic -setParam:\"IIS Web Application Name\"=\"Default Website/testpipeline\" -allowUntrusted=true -enableRule:DoNotDeleteRule -enableRule:AppOffline"
+                }
+	
                 echo 'Deploying in Dev....'
             }
         }
