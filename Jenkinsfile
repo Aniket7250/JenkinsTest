@@ -38,8 +38,7 @@ pipeline {
 		when{
 			not{
 				branch 'skip-unit-test'
-			}
-			
+			}			
 		}
             steps {
                 echo 'Testing.. dotnet test  '
@@ -49,15 +48,18 @@ pipeline {
         stage('Compile & Zip') {
             steps {
                 echo 'Compile..  dotnet build  '
-                bat "dotnet build ${pathToProject}.csproj /T:Publish /p:configuration=${publishConfiguration} /p:framework=${framework} /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:DesktopBuildPackageLocation=\"obj\\debug\\webpackage\\${zipFolderName}.zip\""
+                bat "dotnet build ${pathToProject}.csproj /T:Publish /p:configuration=${deploymentTarget} /p:framework=${framework} /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:DesktopBuildPackageLocation=\"bin\\${deploymentTarget}\\webpackage\\${projName}.zip\""
      
             }
         }
         
          
         stage('Deploy(Dev)') {
-            steps {
-		    msdeploy(path, projName, deployURL, deploymentTarget, iisSiteParent, iisSiteName, jenkinsCredentialsId) 	
+            steps { 
+		    withCredentials([usernamePassword(credentialsId: "${jenkinsCredentialsId}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+			    bat "\"C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" -verb=sync -source:package=\"${path}\\bin\\${deploymentTarget}\\webpackage\\${projName}.zip\" -dest:auto,computerName=\"${deployURL}/msdeploy.axd?site=${iisSiteParent}\",userName=${USERNAME},password=${PASSWORD},authType=basic -setParam:\"IIS Web Application Name\"=\"${iisSiteParent}/${iisSiteName}\" -allowUntrusted=true -enableRule:DoNotDeleteRule -enableRule:AppOffline"
+		    }
+		    //msdeploy(path, projName, deployURL, deploymentTarget, iisSiteParent, iisSiteName, jenkinsCredentialsId) 	
 		    echo 'Deploying in Dev....'
             }
         }
