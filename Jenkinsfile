@@ -13,6 +13,16 @@ def zipFolderName='web-api'
 def iisApplicationName='testpipeline'
 
 
+
+def jenkinsCredentialsId='IIS_JENKINS'
+def path='web-api'
+def deploymentTarget-''debug
+def projName='web-api'
+def deployURL='https://13.234.53.206:8172'
+def iisSiteParent='Default Website'
+def iisSiteName='testpipeline'
+
+
 pipeline {
     agent { node { label 'WINAGENT02' } }
 
@@ -39,7 +49,7 @@ pipeline {
         stage('Compile & Zip') {
             steps {
                 echo 'Compile..  dotnet build  '
-                bat "dotnet build ${pathToProject}.csproj /T:Publish /p:configuration=${publishConfiguration} /p:framework=${framework} /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:DesktopBuildPackageLocation=\"bin\\debug\\webpackage\\${zipFolderName}.zip\""
+                bat "dotnet build ${pathToProject}.csproj /T:Publish /p:configuration=${publishConfiguration} /p:framework=${framework} /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:DesktopBuildPackageLocation=\"obj\\debug\\webpackage\\${zipFolderName}.zip\""
      
             }
         }
@@ -47,11 +57,8 @@ pipeline {
          
         stage('Deploy(Dev)') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'IIS_JENKINS', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    bat "\"C:\\Program Files (x86)\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" -verb=sync -source:package=\"web-api\\bin\\debug\\webpackage\\${zipFolderName}.zip\" -dest:auto,computerName=\"https://13.234.53.206:8172/msdeploy.axd?site=Default Website\",userName=${USERNAME},password=${PASSWORD},authType=basic -setParam:\"IIS Web Application Name\"=\"Default Website/${iisApplicationName}\" -allowUntrusted=true -enableRule:DoNotDeleteRule -enableRule:AppOffline"
-                }
-	
-                echo 'Deploying in Dev....'
+		    msdeploy(path, projName, deployURL, deploymentTarget, iisSiteParent, iisSiteName, jenkinsCredentialsId) 	
+		    echo 'Deploying in Dev....'
             }
         }
     }
