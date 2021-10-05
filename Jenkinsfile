@@ -16,7 +16,7 @@ def iisApplicationName='testpipeline'
 
 def jenkinsCredentialsId='IIS_JENKINS'
 def path='web-api'
-def deploymentTarget-'debug'
+def deploymentTarget='debug'
 def projName='web-api'
 def deployURL='https://13.234.53.206:8172'
 def iisSiteParent='Default Website'
