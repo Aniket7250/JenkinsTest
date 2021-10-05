@@ -39,7 +39,7 @@ namespace web_api_tests
 
             // Assert
             var items = Assert.IsType<List<ShoppingItem>>(okResult.Value);
-            Assert.Equal(3, items.Count);
+            Assert.Equal(3+5, items.Count);
         }
 
         [Fact]
