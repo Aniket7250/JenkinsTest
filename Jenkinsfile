@@ -26,22 +26,9 @@ pipeline {
         }
         stage('Unit Test') {
 		when{
-			def USER_INPUT = input(
-                    message: 'Do you want to skip unit testing ?',
-                    parameters: [
-                            [$class: 'ChoiceParameterDefinition',
-                             choices: ['no','yes'].join('\n'),
-                             name: 'input',
-                             description: 'Menu - select box option']
-                    ])
-
-           	      echo "The answer is: ${USER_INPUT}"
-
-		    if( "${USER_INPUT}" == "yes"){
-			return false
-		    } else {
-			return true
-		    }
+			not{
+				branch 'skip-unit-test'
+			}
 			
 		}
             steps {
