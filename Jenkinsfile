@@ -35,9 +35,9 @@ pipeline
 
                             choice(
 
-                                choices: ['Develop', 'Release','Master'],
+                                choices: ['Develop', 'Release','Master','automation-test'],
 
-                                name: 'Branch'
+                                name: 'Git - Branch'
 
                             ),
 
@@ -53,7 +53,7 @@ pipeline
 
                                 ''',
 
-                                 name: 'Features'
+                                 name: 'New - Features'
 
                             ),
 
@@ -61,7 +61,7 @@ pipeline
 
                                 defaultValue: 'Tag and Commit Id',
 
-                                name: 'Sprint',
+                                name: 'Tag/Commit Id',
 
                                 trim: true
 
